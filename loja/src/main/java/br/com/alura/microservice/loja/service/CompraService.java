@@ -2,6 +2,8 @@ package br.com.alura.microservice.loja.service;
 
 import java.time.LocalDate;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -20,6 +22,8 @@ import br.com.alura.microservice.loja.repository.CompraRepository;
 
 @Service
 public class CompraService {
+	
+	private static final Logger LOG =  LoggerFactory.getLogger(CompraService.class);
 	
 	@Autowired
 	private FornecedorClient fornecedorClient;
@@ -46,7 +50,6 @@ public class CompraService {
 	@HystrixCommand(fallbackMethod = "realizaCompraFallback",
 			threadPoolKey = "realizaCompraThreadPool")
 	public Compra realizaCompra(CompraDTO compra) {
-		
 		Compra compraSalva = new Compra();
 		compraSalva.setState(CompraState.RECEBIDO);
 		compraSalva.setEnderecoDestino(compra.getEndereco().toString());
@@ -59,7 +62,6 @@ public class CompraService {
 		compraSalva.setPedidoId(pedido.getId());
 		compraSalva.setTempoDePreparo(pedido.getTempoDePreparo());
 		compraRepository.save(compraSalva);
-		
 		
 		InfoEntregaDTO entregaDto = new InfoEntregaDTO();
 		entregaDto.setPedidoId(pedido.getId());
